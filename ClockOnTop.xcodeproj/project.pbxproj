@@ -11,6 +11,8 @@
 		483BA44E294022760020CCD3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 483BA44D294022760020CCD3 /* Assets.xcassets */; };
 		483BA451294022760020CCD3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 483BA450294022760020CCD3 /* Preview Assets.xcassets */; };
 		483BA459294022A30020CCD3 /* FullScreenTimeDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483BA458294022A30020CCD3 /* FullScreenTimeDisplay.swift */; };
+		486D4F2D2940CEBD00769C46 /* SettingsDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 486D4F2C2940CEBD00769C46 /* SettingsDialog.swift */; };
+		486D4F2F2940DAF700769C46 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 486D4F2E2940DAF700769C46 /* UserSettings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +22,8 @@
 		483BA450294022760020CCD3 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		483BA452294022760020CCD3 /* ClockOnTop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ClockOnTop.entitlements; sourceTree = "<group>"; };
 		483BA458294022A30020CCD3 /* FullScreenTimeDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenTimeDisplay.swift; sourceTree = "<group>"; };
+		486D4F2C2940CEBD00769C46 /* SettingsDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDialog.swift; sourceTree = "<group>"; };
+		486D4F2E2940DAF700769C46 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +61,8 @@
 				483BA452294022760020CCD3 /* ClockOnTop.entitlements */,
 				483BA44F294022760020CCD3 /* Preview Content */,
 				483BA458294022A30020CCD3 /* FullScreenTimeDisplay.swift */,
+				486D4F2E2940DAF700769C46 /* UserSettings.swift */,
+				486D4F2C2940CEBD00769C46 /* SettingsDialog.swift */,
 			);
 			path = ClockOnTop;
 			sourceTree = "<group>";
@@ -140,7 +146,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				483BA459294022A30020CCD3 /* FullScreenTimeDisplay.swift in Sources */,
+				486D4F2F2940DAF700769C46 /* UserSettings.swift in Sources */,
 				483BA44A294022750020CCD3 /* ClockOnTopApp.swift in Sources */,
+				486D4F2D2940CEBD00769C46 /* SettingsDialog.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct FullScreenTimeDisplay: View {
+    @EnvironmentObject var settings: UserSettings
     @State private var currentTime: String = ""
+    @State private var isShowingInputDialog = false
 
     var body: some View {
         ZStack {
@@ -16,14 +18,22 @@ struct FullScreenTimeDisplay: View {
                 ZStack {
                     Text(currentTime)
                         .foregroundColor(.indigo)
-                        .font(.custom("Cascadia Mono", size: min(max(geometry.size.height * 0.8, 8), max(geometry.size.width * 0.2, 8))))
+                        .font(.custom(settings.fontFamily, size: min(max(geometry.size.height * 0.8, 8), max(geometry.size.width * 0.2, 8))))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+
                         .onAppear(perform: startTimer)
+                        .contextMenu {
+                            Button("设置") {
+                                self.isShowingInputDialog = true
+                            }
+                        }
                 }
                 .edgesIgnoringSafeArea(.all)
             }
         }
-
+        .popover(isPresented: $isShowingInputDialog) {
+            SettingsDialog().environmentObject(settings)
+        }
         .frame(minWidth: 180, minHeight: 50)
     }
 

@@ -48,7 +48,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         var keyboardEventListener: Any?
 
         // Create the SwiftUI view that provides the window contents.
-        let contentView = FullScreenTimeDisplay().onHover { isHovering in
+        let contentView = FullScreenTimeDisplay().environmentObject(UserSettings()).onHover { isHovering in
             if isHovering {
                 self.window.alphaValue = 0.1
                 self.window.ignoresMouseEvents = true
