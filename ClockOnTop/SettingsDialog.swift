@@ -15,7 +15,7 @@ struct SettingsDialog: View {
         VStack {
             TextField("字体", text: $fontFamily)
             TextField("颜色", text: $color)
-            Button("保存" + settings.fontFamily) {
+            Button("保存") {
                 settings.fontFamily = self.fontFamily
             }
         }
