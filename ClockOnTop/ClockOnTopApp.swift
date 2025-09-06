@@ -45,6 +45,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // 能够移动
         window.isMovableByWindowBackground = true
         window.backgroundColor = NSColor(red: 0.9, green: 1.0, blue: 0.98, alpha: 0.7)
+        // Fix: 透明底色下的文字阴影残留
+        window.hasShadow = false
         var keyboardEventListener: Any?
 
         // Create the SwiftUI view that provides the window contents.
