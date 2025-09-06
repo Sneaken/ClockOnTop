@@ -44,7 +44,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // 能够移动
         window.isMovableByWindowBackground = true
-        window.backgroundColor = NSColor(red: 0.9, green: 1.0, blue: 0.98, alpha: 0.7)
+        window.backgroundColor = .clear
+        window.isOpaque = false
         // Fix: 透明底色下的文字阴影残留
         window.hasShadow = false
         var keyboardEventListener: Any?
@@ -71,6 +72,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         window.contentView = NSHostingView(rootView: contentView)
+        
+        let bgView = NSView(frame: window.contentView!.bounds)
+        bgView.wantsLayer = true
+        bgView.layer?.cornerRadius = 12
+        bgView.layer?.masksToBounds = true
+        
+//        window.backgroundColor = NSColor(red: 0.96, green: 0.97, blue: 0.98, alpha: 0.55)
+        bgView.layer?.backgroundColor = NSColor(red: 0.96, green: 0.97, blue: 0.98, alpha: 0.3).cgColor
+        // 3. 保证后续所有子视图（Text 等）都在这层圆角之上
+        bgView.autoresizingMask = [.width, .height]
+        window.contentView!.addSubview(bgView)
         window.makeKeyAndOrderFront(self)
         window.orderFrontRegardless()
     }
