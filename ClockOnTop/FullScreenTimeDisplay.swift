@@ -17,7 +17,7 @@ struct FullScreenTimeDisplay: View {
             GeometryReader { geometry in
                 ZStack {
                     Text(currentTime)
-                        .foregroundColor(Color(red: 0.25, green: 0.52, blue: 0.58, opacity: 0.8))
+                        .foregroundColor(Color(red: 0.922, green: 0.184, blue: 0.588, opacity: 0.8))
                         .font(.custom(settings.fontFamily, size: min(max(geometry.size.height * 0.8, 8), max(geometry.size.width * 0.2, 8))))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
 
