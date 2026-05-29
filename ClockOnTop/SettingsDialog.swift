@@ -4,26 +4,83 @@
 //
 //  Created by Sneaken on 2022/12/7.
 //
+
 import SwiftUI
 
 struct SettingsDialog: View {
     @EnvironmentObject var settings: UserSettings
-    @State private var fontFamily: String = ""
-    @State private var color: String = ""
+    @State private var selectedFont: String = ""
+
+    private var monospacedFonts: [String] {
+        let manager = NSFontManager.shared
+        let families = manager.availableFontFamilies
+
+        return families.compactMap { family -> String? in
+            guard let members = manager.availableMembers(ofFontFamily: family) else { return nil }
+            for member in members {
+                guard let psName = member[0] as? String else { continue }
+                guard let font = NSFont(name: psName, size: 12) else { continue }
+                let traits = manager.traits(of: font)
+                if traits.contains(.fixedPitchFontMask) {
+                    return psName
+                }
+            }
+            return nil
+        }.sorted()
+    }
 
     var body: some View {
-        VStack {
-            TextField("字体", text: $fontFamily)
-//            TextField("颜色", text: $color)
-            Button("保存") {
-                settings.fontFamily = self.fontFamily
+        VStack(alignment: .leading, spacing: 0) {
+            Text("字体")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                .padding(.bottom, 8)
+
+            List(monospacedFonts, id: \.self) { fontName in
+                HStack(spacing: 10) {
+                    Text("Aa")
+                        .font(.custom(fontName, size: 16))
+                        .frame(width: 32, alignment: .center)
+
+                    Text(fontName)
+                        .font(.system(size: 13))
+                        .lineLimit(1)
+
+                    Spacer()
+
+                    if fontName == selectedFont {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.accentColor)
+                    }
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 6)
+                .background(
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(fontName == selectedFont ? Color.accentColor.opacity(0.1) : Color.clear)
+                )
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    selectedFont = fontName
+                    settings.fontFamily = fontName
+                }
             }
+            .listStyle(.plain)
+            .frame(width: 320, height: 360)
         }
-        .padding(20)
-        .frame(width: 150, height: 150)
+        .frame(width: 340)
         .onAppear {
-            self.fontFamily = settings.fontFamily
-            self.color = settings.color
+            selectedFont = settings.fontFamily
         }
+    }
+}
+
+struct SettingsDialog_Previews: PreviewProvider {
+    static var previews: some View {
+        SettingsDialog()
+            .environmentObject(UserSettings())
     }
 }

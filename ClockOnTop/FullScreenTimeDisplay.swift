@@ -6,47 +6,102 @@
 //
 
 import SwiftUI
+import Combine
 
 struct FullScreenTimeDisplay: View {
     @EnvironmentObject var settings: UserSettings
     @State private var currentTime: String = ""
-    @State private var isShowingInputDialog = false
+    @State private var isShowingSettings = false
+    @State private var timerCancellable: AnyCancellable?
+
+    private static let timeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .medium
+        return formatter
+    }()
 
     var body: some View {
-        ZStack {
-            GeometryReader { geometry in
-                ZStack {
-                    Text(currentTime)
-                        .foregroundColor(Color(red: 0.922, green: 0.184, blue: 0.588, opacity: 0.8))
-                        .font(.custom(settings.fontFamily, size: min(max(geometry.size.height * 0.8, 8), max(geometry.size.width * 0.2, 8))))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                        .onAppear(perform: startTimer)
-                        .contextMenu {
-                            Button("设置") {
-                                self.isShowingInputDialog = true
-                            }
-                        }
+        GeometryReader { geometry in
+            ZStack {
+                Text(currentTime)
+                    .foregroundColor(Color(red: 0.922, green: 0.184, blue: 0.588, opacity: 0.8))
+                    .font(.custom(settings.fontFamily, size: adaptiveFontSize(for: geometry.size)))
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(red: 0.96, green: 0.94, blue: 0.92).opacity(0.15))
+            )
+            .contextMenu {
+                Button("设置") {
+                    isShowingSettings = true
                 }
-                .edgesIgnoringSafeArea(.all)
             }
         }
-        .popover(isPresented: $isShowingInputDialog) {
-            SettingsDialog().environmentObject(settings)
-        }
         .frame(minWidth: 180, minHeight: 50)
+        .onAppear {
+            currentTime = Self.timeFormatter.string(from: Date())
+            timerCancellable = alignToNextSecond()
+        }
+        .onDisappear {
+            timerCancellable?.cancel()
+        }
+        .popover(isPresented: $isShowingSettings) {
+            SettingsDialog()
+                .environmentObject(settings)
+        }
     }
 
-    private func startTimer() {
-        // 创建一个定时器，每隔一秒更新当前时间
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-            self.currentTime = DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .medium)
+    private func adaptiveFontSize(for size: CGSize) -> CGFloat {
+        let maxHeight = size.height * 0.92
+        let maxWidth = size.width * 0.92
+        let fontName = settings.fontFamily
+        let text = currentTime.isEmpty ? "00:00:00" : currentTime
+
+        var low: CGFloat = 8
+        var high: CGFloat = maxHeight
+        var best: CGFloat = 8
+
+        while low <= high {
+            let mid = (low + high) / 2
+            guard let font = NSFont(name: fontName, size: mid) else { break }
+            let textWidth = (text as NSString).size(withAttributes: [.font: font]).width
+
+            if textWidth <= maxWidth {
+                best = mid
+                low = mid + 0.5
+            } else {
+                high = mid - 0.5
+            }
         }
+
+        return best
     }
+
+    private func alignToNextSecond() -> AnyCancellable {
+        let now = Date()
+        let nanoseconds = Calendar.current.component(.nanosecond, from: now)
+        let delay = Double(1_000_000_000 - nanoseconds) / 1_000_000_000.0
+
+        return Just(())
+            .delay(for: .seconds(delay), scheduler: RunLoop.main)
+            .handleEvents(receiveOutput: { _ in
+                currentTime = Self.timeFormatter.string(from: Date())
+            })
+            .flatMap { _ in
+                Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+            }
+            .sink { _ in
+                currentTime = Self.timeFormatter.string(from: Date())
+            }
+    }
+
 }
 
 struct FullScreenTimeDisplay_Previews: PreviewProvider {
     static var previews: some View {
         FullScreenTimeDisplay()
+            .environmentObject(UserSettings())
     }
 }
