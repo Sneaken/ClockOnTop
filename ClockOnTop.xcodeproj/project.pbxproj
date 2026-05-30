@@ -14,6 +14,7 @@
 		486D4F2D2940CEBD00769C46 /* SettingsDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 486D4F2C2940CEBD00769C46 /* SettingsDialog.swift */; };
 		486D4F2F2940DAF700769C46 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 486D4F2E2940DAF700769C46 /* UserSettings.swift */; };
 		4877A0012940E00000769C46 /* FloatingWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4877A0002940E00000769C46 /* FloatingWindowController.swift */; };
+		4877A0032940E10000769C46 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4877A0022940E10000769C46 /* AppTheme.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		486D4F2C2940CEBD00769C46 /* SettingsDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDialog.swift; sourceTree = "<group>"; };
 		486D4F2E2940DAF700769C46 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		4877A0002940E00000769C46 /* FloatingWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingWindowController.swift; sourceTree = "<group>"; };
+		4877A0022940E10000769C46 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +68,7 @@
 				486D4F2E2940DAF700769C46 /* UserSettings.swift */,
 				486D4F2C2940CEBD00769C46 /* SettingsDialog.swift */,
 				4877A0002940E00000769C46 /* FloatingWindowController.swift */,
+				4877A0022940E10000769C46 /* AppTheme.swift */,
 			);
 			path = ClockOnTop;
 			sourceTree = "<group>";
@@ -153,6 +156,7 @@
 				483BA44A294022750020CCD3 /* ClockOnTopApp.swift in Sources */,
 				486D4F2D2940CEBD00769C46 /* SettingsDialog.swift in Sources */,
 				4877A0012940E00000769C46 /* FloatingWindowController.swift in Sources */,
+				4877A0032940E10000769C46 /* AppTheme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

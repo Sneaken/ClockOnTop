@@ -25,13 +25,13 @@ struct FullScreenTimeDisplay: View {
         GeometryReader { geometry in
             ZStack {
                 Text(currentTime)
-                    .foregroundColor(Color(red: 0.922, green: 0.184, blue: 0.588, opacity: 0.8))
+                    .foregroundColor(settings.currentTheme.textColor)
                     .font(.custom(settings.fontFamily, size: adaptiveFontSize(for: geometry.size)))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(red: 0.96, green: 0.94, blue: 0.92).opacity(0.15))
+                    .fill(settings.currentTheme.backgroundColor)
             )
             .contextMenu {
                 Button("设置") {

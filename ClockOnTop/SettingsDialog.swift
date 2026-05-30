@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingsDialog: View {
     @EnvironmentObject var settings: UserSettings
     @State private var selectedFont: String = ""
+    @State private var selectedTheme: String = ""
 
     private var monospacedFonts: [String] {
         let manager = NSFontManager.shared
@@ -31,11 +32,55 @@ struct SettingsDialog: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("字体")
+            Text("主题")
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundColor(.secondary)
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
+                .padding(.bottom, 8)
+
+            let columns = [GridItem(.adaptive(minimum: 56, maximum: 64), spacing: 8)]
+
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 8) {
+                    ForEach(AppTheme.allThemes) { theme in
+                        Button {
+                            selectedTheme = theme.id
+                            settings.themeId = theme.id
+                        } label: {
+                            VStack(spacing: 4) {
+                                Circle()
+                                    .fill(theme.textColor)
+                                    .frame(width: 22, height: 22)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(selectedTheme == theme.id ? Color.accentColor : Color.clear, lineWidth: 2)
+                                    )
+
+                                Text(theme.name)
+                                    .font(.system(size: 10))
+                                    .foregroundColor(.primary)
+                                    .lineLimit(1)
+                            }
+                            .frame(minWidth: 56)
+                            .padding(.vertical, 6)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(selectedTheme == theme.id ? Color.accentColor.opacity(0.1) : Color.clear)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 12)
+            }
+            .frame(height: 140)
+            .padding(.bottom, 8)
+
+            Text("字体")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 16)
                 .padding(.bottom, 8)
 
             List(monospacedFonts, id: \.self) { fontName in
@@ -69,11 +114,12 @@ struct SettingsDialog: View {
                 }
             }
             .listStyle(.plain)
-            .frame(width: 320, height: 360)
+            .frame(height: 300)
         }
         .frame(width: 340)
         .onAppear {
             selectedFont = settings.fontFamily
+            selectedTheme = settings.themeId
         }
     }
 }
