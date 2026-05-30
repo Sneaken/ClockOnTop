@@ -1,0 +1,7 @@
+# Xcode
+*.xcuserstate
+xcuserdata/
+project.xcworkspace/xcuserdata/
+
+# Spec workflow
+.spec-workflow/
