@@ -6,13 +6,13 @@
 //
 
 import SwiftUI
-import Combine
 
 struct FullScreenTimeDisplay: View {
     @EnvironmentObject var settings: UserSettings
     @State private var currentTime: String = ""
     @State private var isShowingSettings = false
-    @State private var timerCancellable: AnyCancellable?
+    @State private var tickWorkItem: DispatchWorkItem?
+    @State private var isActive = false
 
     private static let timeFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -21,12 +21,20 @@ struct FullScreenTimeDisplay: View {
         return formatter
     }()
 
+    private static let sampleTimeString: String = {
+        let sampleDate = Calendar.current.date(from: DateComponents(hour: 22, minute: 58, second: 58))!
+        return timeFormatter.string(from: sampleDate)
+    }()
+
     var body: some View {
         GeometryReader { geometry in
+            let fontSize = adaptiveFontSize(for: geometry.size)
             ZStack {
                 Text(currentTime)
                     .foregroundColor(settings.currentTheme.textColor)
-                    .font(.custom(settings.fontFamily, size: adaptiveFontSize(for: geometry.size)))
+                    .font(.custom(settings.fontFamily, size: fontSize))
+                    .lineLimit(1)
+                    .offset(y: verticalOffset(fontName: settings.fontFamily, fontSize: fontSize))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(
@@ -41,11 +49,14 @@ struct FullScreenTimeDisplay: View {
         }
         .frame(minWidth: 180, minHeight: 50)
         .onAppear {
+            isActive = true
             currentTime = Self.timeFormatter.string(from: Date())
-            timerCancellable = alignToNextSecond()
+            scheduleTick()
         }
         .onDisappear {
-            timerCancellable?.cancel()
+            isActive = false
+            tickWorkItem?.cancel()
+            tickWorkItem = nil
         }
         .popover(isPresented: $isShowingSettings) {
             SettingsDialog()
@@ -53,11 +64,29 @@ struct FullScreenTimeDisplay: View {
         }
     }
 
+    private func scheduleTick() {
+        guard isActive else { return }
+
+        let now = Date()
+        let nanoseconds = Calendar.current.component(.nanosecond, from: now)
+        let delay = Double(1_000_000_000 - nanoseconds) / 1_000_000_000.0
+
+        let item = DispatchWorkItem {
+            guard self.isActive else { return }
+            self.currentTime = Self.timeFormatter.string(from: Date())
+            self.scheduleTick()
+        }
+
+        tickWorkItem?.cancel()
+        tickWorkItem = item
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: item)
+    }
+
     private func adaptiveFontSize(for size: CGSize) -> CGFloat {
         let maxHeight = size.height * 0.92
         let maxWidth = size.width * 0.92
         let fontName = settings.fontFamily
-        let text = currentTime.isEmpty ? "00:00:00" : currentTime
+        let text = Self.sampleTimeString
 
         var low: CGFloat = 8
         var high: CGFloat = maxHeight
@@ -66,9 +95,9 @@ struct FullScreenTimeDisplay: View {
         while low <= high {
             let mid = (low + high) / 2
             guard let font = NSFont(name: fontName, size: mid) else { break }
-            let textWidth = (text as NSString).size(withAttributes: [.font: font]).width
+            let textSize = (text as NSString).size(withAttributes: [.font: font])
 
-            if textWidth <= maxWidth {
+            if textSize.width <= maxWidth && textSize.height <= maxHeight {
                 best = mid
                 low = mid + 0.5
             } else {
@@ -79,24 +108,12 @@ struct FullScreenTimeDisplay: View {
         return best
     }
 
-    private func alignToNextSecond() -> AnyCancellable {
-        let now = Date()
-        let nanoseconds = Calendar.current.component(.nanosecond, from: now)
-        let delay = Double(1_000_000_000 - nanoseconds) / 1_000_000_000.0
-
-        return Just(())
-            .delay(for: .seconds(delay), scheduler: RunLoop.main)
-            .handleEvents(receiveOutput: { _ in
-                currentTime = Self.timeFormatter.string(from: Date())
-            })
-            .flatMap { _ in
-                Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-            }
-            .sink { _ in
-                currentTime = Self.timeFormatter.string(from: Date())
-            }
+    private func verticalOffset(fontName: String, fontSize: CGFloat) -> CGFloat {
+        guard let font = NSFont(name: fontName, size: fontSize) else { return 0 }
+        let bboxCenter = (font.ascender + font.descender) / 2
+        let visualCenter = font.capHeight / 2
+        return visualCenter - bboxCenter
     }
-
 }
 
 struct FullScreenTimeDisplay_Previews: PreviewProvider {

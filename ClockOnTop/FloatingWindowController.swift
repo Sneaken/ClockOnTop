@@ -6,12 +6,10 @@
 //
 
 import SwiftUI
-import Combine
 
 final class FloatingWindowController {
     private var window: NSPanel?
     private var keyboardMonitor: Any?
-    private var cancellables = Set<AnyCancellable>()
 
     func setupWindow() {
         let panel = NSPanel(
@@ -44,6 +42,10 @@ final class FloatingWindowController {
                 if isHovering {
                     panel.alphaValue = 0.1
                     panel.ignoresMouseEvents = true
+                    if let monitor = self.keyboardMonitor {
+                        NSEvent.removeMonitor(monitor)
+                        self.keyboardMonitor = nil
+                    }
                     self.keyboardMonitor = NSEvent.addGlobalMonitorForEvents(matching: .flagsChanged) { [weak panel] event in
                         guard let panel = panel else { return }
                         if event.modifierFlags.contains(.command) {

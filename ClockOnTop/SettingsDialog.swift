@@ -11,24 +11,7 @@ struct SettingsDialog: View {
     @EnvironmentObject var settings: UserSettings
     @State private var selectedFont: String = ""
     @State private var selectedTheme: String = ""
-
-    private var monospacedFonts: [String] {
-        let manager = NSFontManager.shared
-        let families = manager.availableFontFamilies
-
-        return families.compactMap { family -> String? in
-            guard let members = manager.availableMembers(ofFontFamily: family) else { return nil }
-            for member in members {
-                guard let psName = member[0] as? String else { continue }
-                guard let font = NSFont(name: psName, size: 12) else { continue }
-                let traits = manager.traits(of: font)
-                if traits.contains(.fixedPitchFontMask) {
-                    return psName
-                }
-            }
-            return nil
-        }.sorted()
-    }
+    @State private var monospacedFonts: [String] = []
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -118,9 +101,30 @@ struct SettingsDialog: View {
         }
         .frame(width: 340)
         .onAppear {
+            if monospacedFonts.isEmpty {
+                monospacedFonts = loadMonospacedFonts()
+            }
             selectedFont = settings.fontFamily
             selectedTheme = settings.themeId
         }
+    }
+
+    private func loadMonospacedFonts() -> [String] {
+        let manager = NSFontManager.shared
+        let families = manager.availableFontFamilies
+
+        return families.compactMap { family -> String? in
+            guard let members = manager.availableMembers(ofFontFamily: family) else { return nil }
+            for member in members {
+                guard let psName = member[0] as? String else { continue }
+                guard let font = NSFont(name: psName, size: 12) else { continue }
+                let traits = manager.traits(of: font)
+                if traits.contains(.fixedPitchFontMask) {
+                    return psName
+                }
+            }
+            return nil
+        }.sorted()
     }
 }
 
