@@ -7,9 +7,13 @@
 
 import SwiftUI
 
-final class FloatingWindowController {
+final class FloatingWindowController: NSObject, NSWindowRestoration {
     private var window: NSPanel?
     private var keyboardMonitor: Any?
+
+    static func restoreWindow(withIdentifier identifier: NSUserInterfaceItemIdentifier, state: NSCoder, completionHandler: @escaping (NSWindow?, Error?) -> Void) {
+        completionHandler(nil, nil)
+    }
 
     func setupWindow() {
         let panel = NSPanel(
@@ -29,6 +33,7 @@ final class FloatingWindowController {
         panel.titlebarAppearsTransparent = true
         panel.titleVisibility = .hidden
         panel.isRestorable = true
+        panel.restorationClass = FloatingWindowController.self
         panel.isMovableByWindowBackground = true
         panel.backgroundColor = .clear
         panel.isOpaque = false
@@ -64,7 +69,6 @@ final class FloatingWindowController {
             }
 
         panel.contentView = NSHostingView(rootView: contentView)
-        panel.makeKeyAndOrderFront(nil)
         panel.orderFrontRegardless()
 
         window = panel
